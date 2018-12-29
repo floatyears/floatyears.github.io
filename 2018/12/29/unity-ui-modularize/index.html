@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Program," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="两个月前的一篇文章中提到了想做一个UI编辑器来简化UI方面的工作。UI代码编写是一个比较繁重但是并没有太高技术含量的东西，多年以来我都在想是不是有某种方法可以极大地简化这样地工作。后来有朋友说他们正在做UI模块化方面的工作，受到了启发，最近一段时间终于理出一些头绪，并且有时间来完成这个工具。初步迭代了几个版本，在项目中逐渐启用。目前在模块化了的UI中，一个UI类有1/3~1/2的代码可以通过工具生">
+<meta name="keywords" content="Program">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UI模块化">
+<meta property="og:url" content="http://yoursite.com/2018/12/29/unity-ui-modularize/index.html">
+<meta property="og:site_name" content="Graphics Boy">
+<meta property="og:description" content="两个月前的一篇文章中提到了想做一个UI编辑器来简化UI方面的工作。UI代码编写是一个比较繁重但是并没有太高技术含量的东西，多年以来我都在想是不是有某种方法可以极大地简化这样地工作。后来有朋友说他们正在做UI模块化方面的工作，受到了启发，最近一段时间终于理出一些头绪，并且有时间来完成这个工具。初步迭代了几个版本，在项目中逐渐启用。目前在模块化了的UI中，一个UI类有1/3~1/2的代码可以通过工具生">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-12-29T14:10:48.297Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UI模块化">
+<meta name="twitter:description" content="两个月前的一篇文章中提到了想做一个UI编辑器来简化UI方面的工作。UI代码编写是一个比较繁重但是并没有太高技术含量的东西，多年以来我都在想是不是有某种方法可以极大地简化这样地工作。后来有朋友说他们正在做UI模块化方面的工作，受到了启发，最近一段时间终于理出一些头绪，并且有时间来完成这个工具。初步迭代了几个版本，在项目中逐渐启用。目前在模块化了的UI中，一个UI类有1/3~1/2的代码可以通过工具生">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/29/unity-ui-modularize/"/>
+
+
+
+
+
+  <title>UI模块化 | Graphics Boy</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Graphics Boy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/29/unity-ui-modularize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿来">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Graphics Boy">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">UI模块化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-29T00:00:00+08:00">
+                2018-12-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Program/" itemprop="url" rel="index">
+                    <span itemprop="name">Program</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/29/unity-ui-modularize/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/12/29/unity-ui-modularize/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>两个月前的一篇文章中提到了想做一个UI编辑器来简化UI方面的工作。UI代码编写是一个比较繁重但是并没有太高技术含量的东西，多年以来我都在想是不是有某种方法可以极大地简化这样地工作。后来有朋友说他们正在做UI模块化方面的工作，受到了启发，最近一段时间终于理出一些头绪，并且有时间来完成这个工具。初步迭代了几个版本，在项目中逐渐启用。目前在模块化了的UI中，一个UI类有1/3~1/2的代码可以通过工具生成，减少了相当一部分编码工作量。后续还会继续优化，最终目标是能有1/2~2/3的代码可以通过工具生成。</p>
+<h4 id="UI组件"><a href="#UI组件" class="headerlink" title="UI组件"></a>UI组件</h4><p>每一个UI框架中都有很多UI组件，UI组件可以看作是面向普适问题的解决方案。在我看来，UI模块比UI组件要处于更上面的层级，因为它是面向特定问题域的解决方案。如果把写UI比做搭积木，UI组件就是积木的原材料——木头，UI模块则是一个个用木头削成了特定形状的积木。平时写UI，大部分时间都是从头开始写，把原材料（UI组件）削成不同形状的积木，然后再把积木搭成我们想要的样子。我们每次都要自己加工原材料，而加工出来的内容并没有得到很好的固化，变成以后我们可以拿来即用的通用模块。这是一个很浪费时间和精力的过程，并且在这个过程中只会增加我们技术的熟练度，不会增加我们技术的高度。作为一个程序员，要致力于把自己从事务性的工作中解放出来，更多的精力集中在开创性的工作上面。什么是事务性的工作呢，就是重复了三次以上的开创性工作。对Unity来讲，常用的UI框架是nGUI/uGUI，里面的UI组件则是UISprite，UILabel，UIButton，UIToggle等等，复杂一些就是UITable（列表），或者自己实现的循环列表，平时写UI打交道最多的就是这些东西。UI组件库为了满足最广泛的需求，都会设置异常多的可配置变量。比如文字，可以设置其字号、颜色、是否有描边、描边颜色等等。但在特定的项目中，所有UI上的字号可能只有2~3种，字体2~3种，颜色2~3种。这就是特定问题域，因为相对来说变量更少。我们可以设计一个设置字体的API，比如SetFontByType(UILabel label, FontTypeEnum ftEnum)，根据传入的类型来设置字体、字号、颜色以及字体效果，稍微灵活一点儿，把这些字体的变量通过配置的方式保存，要想增加或者修改某个样式直接改配置就行，比如SetFontByConfigID(UILabel label, int fontConfigID)。虽然上面的方法减少了在每个地方设置颜色的尴尬局面，但这样还不够，我们仍然在跟底层的UI组件打交道。还需要以更高的抽象层次来减少我们的事务性工作。</p>
+<h4 id="模块制作"><a href="#模块制作" class="headerlink" title="模块制作"></a>模块制作</h4><p>我们把好多UI组件组合在一起，它就变成了一个初步的模块。设想一种应用场景，比如装备图标，它会显示装备的icon、等级、名字，这几个是基本的显示。如果这个图标在背包界面，它可能还会显示装备数量，如果它在角色界面，它可能还会显示是否绑定。一个看起来相似的东西，它在不同的界面可能会有不同的显示，但它们的交集会占到整个内容的80%或者更高，只有20%的内容在发生变化。比较容易想到的办法是，把所有的变化内容都放在一起，通过一个API来设置这些属性，比如SetEquipIconByWhere(EquipIconType eiType)，在背包界面隐藏“已绑定”，在角色界面隐藏数量的显示。但是这带另外一个问题，当我们的变化内容越来越多的时候，就会使得所有内容的全集变得非常巨大，可能会达到当前所需内容的300%。</p>
+<p>需要解决的问题是，一个模块的大部分内容都是一致的，但每个地方都会存在些许的差异。不可能有差异的地方就再定义一个模块，排列组合下来就要爆炸。打个比方，定义了一个模块A，但是在不同的地方用的却是A1、A2、A3、A4、A5、A6，怎么去平衡这个问题呢。先要定义一个模块的全集，即A123456。但不同于上面那种在运行时处理这些差异的方法，把解决这些模块差异提前到“编译时”，这样就省去了运行时的开销。如何理解“编译时”，就是把模块的功能原子化，那每种情况都是这些原子的组合。不同的组合会有生成不同的代码实现，就像是一条指令对应了一个功能，指令的组合就变成了程序。</p>
+<h4 id="定义输入"><a href="#定义输入" class="headerlink" title="定义输入"></a>定义输入</h4><p>模块制作好了，如何去利用这些模块呢。对程序的一种抽象是，定义好输入，就会产生特定的输出，我们无需关心中间过程。对于模块化来说也是这样，我们只需要定义好输入到模块内的数据，剩下的工作只需要调用一个API，比如SetUIModule_EquipItem(EquipData data)。模块的使用者只需要知道在何时调用这个API就OK，不用再多写一句代码。那模块是怎么知道该如何显示自身的内容呢，在图形化界面中搭建UI的时候就已经把模块的选项配置好，然后通过“编译”生成了SetUIModule_EquipItem(EquipData data)这个函数的详细实现。这就是对模块的抽象，定义好输入，就自动生成对应的函数。后面需要做的就是不断丰富模块库，可以拿来即用，到项目中后期，图形UI制作完毕的时候，代码也写完了一大半。</p>
+<h4 id="更高的抽象"><a href="#更高的抽象" class="headerlink" title="更高的抽象"></a>更高的抽象</h4><p>上面说的是对数据的抽象，我们需要定义好输入模块的数据结构。我觉得更高一层是对行为的抽象，定义好数据结构，那么对这个数据进行操作的一系列行为也随之固化下来，因为特定的项目面向的总是特定的问题域，所以不会有随时都在变化的无数行为。比如定义了EquipData，那么对装备的行为就是拾取、穿戴、升级、升阶、融合等等。把融合行为做成模块的形式，那么只需要在装备融合按钮上绑定一个点击事件，然后调用EquipCombineBehavior()，接下来的事情就无需操心了。毕竟对游戏来说，也就是响应用户的输入行为。不过这个方向我个人还在摸索中，希望将来有一天能够实现这个功能，那样做游戏就轻松多了。</p>
+<p>面向通用问题的解决方案是无法和面向特定问题的方案比效率的，因为特定问题的解决方案总是可以根据应用场景优化到极致。所以不能期望利用第三方插件可以把效率做到最高，总是需要针对项目中的特定问题和工作流去优化出一套最优的方案。UI模块化就不是一种通用工具，不能把它放到不同的项目直接使用，需要先做好一堆积木，然后才能用这些积木去搭出不同的形状。模块化的目的是尽量减少重复的劳动，有些东西只需要做一次，就可以在后续开发中简单地复用。</p>
+<h4 id="最少冗余信息量"><a href="#最少冗余信息量" class="headerlink" title="最少冗余信息量"></a>最少冗余信息量</h4><p>如果两行代码的相似度超过70%，那么就可以把这两行代码看作带有冗余信息。我们经常性的会写很多相似度很高的代码，特别是在UI中，比如<code>UIEventListener.Get(btnClose).onClick = OnClickClose;</code><br>这里面有大部分的代码具有的信息量都是重复的，独一无二的信息只是btnClose，OnClickClose这个函数也可以看作是根据btnClose生成的唯一标识，所以其实只需要在UI里面把按钮名字标记为btnClose，就可以生成这些代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//field declare</span></span><br><span class="line"><span class="keyword">private</span> GameObject btnClose;</span><br><span class="line">...</span><br><span class="line"><span class="comment">//field init</span></span><br><span class="line"><span class="keyword">this</span>.btnClose = transform.Find(<span class="string">"btnClosePath"</span>).gameObject;</span><br><span class="line">UIEventListener.Get(btnClose).onClick = OnClickClose;</span><br><span class="line">....</span><br><span class="line"><span class="comment">//function declare</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnClickClose</span><span class="params">(GameObject go)</span></span>&#123;</span><br><span class="line"><span class="comment">//functiontobeimplemented</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>按照这个思路，就可以省去手写很多代码。 </p>
+<h4 id="智能决策"><a href="#智能决策" class="headerlink" title="智能决策"></a>智能决策</h4><p>假定一个UI含有的信息量是恒定的，那么可以把所有这些信息量开放出来，交给使用者去设置，但是更好的做法是做到智能决策，程序自动设置这些信息，减少使用者设置这些信息带来的决策成本。比如一个物品背包，作为列表显示，就会有行数和列数，如果只做很基本的功能，就需要使用者自己设置要显示的行数和列数。但行数和列数其实跟背包的显示区域、背包格子大小，格子之间的间距很强的相关性。所以在制作背包UI的时候，行数和列数就已经被固定了下来，默认如果不设置行数和列数就使用计算出来的值（当然仍需保留相关接口以免出现特殊情况）。这样智能决策的地方多了就可以节省很多时间，而且bug也少比较容易查，因为人参与的地方越多就越容易出现bug，而且是莫名其妙的bug。</p>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>模块化带来的好处是，只定义输入数据，所有的实现都是生成的代码，对使用者来说这就是个黑盒，要优化或者改变里面的实现就非常方便。当然函数也有这样的作用，但是函数是运行时的，UI模块可以在做到在“编译时”去修改或者优化实现，即优化生成的代码。另外还能避免一个相同或者类似的东西，每个人写出来都不一样，特别是新手或者对项目不熟的程序员。</p>
+<p><strong>虽然工具不能通用，但是背后的思路是可以通用的，逐渐积累一些可以在以后很多年都能用的解决问题的思路会收益良多。</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Program/" rel="tag"># Program</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/03/running-marathon/" rel="next" title="关于马拉松这件小事">
+                <i class="fa fa-chevron-left"></i> 关于马拉松这件小事
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">阿来</p>
+              <p class="site-description motion-element" itemprop="description">专注于编程和图形</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#UI组件"><span class="nav-number">1.</span> <span class="nav-text">UI组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模块制作"><span class="nav-number">2.</span> <span class="nav-text">模块制作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义输入"><span class="nav-number">3.</span> <span class="nav-text">定义输入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更高的抽象"><span class="nav-number">4.</span> <span class="nav-text">更高的抽象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最少冗余信息量"><span class="nav-number">5.</span> <span class="nav-text">最少冗余信息量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#智能决策"><span class="nav-number">6.</span> <span class="nav-text">智能决策</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他"><span class="nav-number">7.</span> <span class="nav-text">其他</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿来</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2018/12/29/unity-ui-modularize/';
+          this.page.identifier = '2018/12/29/unity-ui-modularize/';
+          this.page.title = 'UI模块化';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
