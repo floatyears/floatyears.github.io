@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Graphics Boy">
 <meta property="og:description" content="#分层项目立项的时候就确定使用Lua来做热更新。Lua作为一种”胶水”语言在游戏领域被广泛使用，当然每个项目使用它的目的各不相同。Unity所用的C#本来也带有JIT（CLR会在第一次调用函数的时候将函数的IL编译成对应平台的机器码），可以实现热更新，奈何iOS禁止在其平台上使用JIT。所以大厂的引擎厂商无法提供全平台的热更新方案，只能开发者自己用Lua（iOS上也没有jit，只能解释执行）或者P">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-24T15:18:48.000Z">
+<meta property="og:updated_time" content="2020-10-16T03:37:51.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏性能优化实践">
 <meta name="twitter:description" content="#分层项目立项的时候就确定使用Lua来做热更新。Lua作为一种”胶水”语言在游戏领域被广泛使用，当然每个项目使用它的目的各不相同。Unity所用的C#本来也带有JIT（CLR会在第一次调用函数的时候将函数的IL编译成对应平台的机器码），可以实现热更新，奈何iOS禁止在其平台上使用JIT。所以大厂的引擎厂商无法提供全平台的热更新方案，只能开发者自己用Lua（iOS上也没有jit，只能解释执行）或者P">
@@ -161,7 +161,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <h1 class="site-subtitle" itemprop="description"></h1>
       
   </div>
 
@@ -207,6 +207,16 @@
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
             标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
           </a>
         </li>
       
@@ -270,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Unity游戏性能优化实践</h1>
+          <h2 class="post-title" itemprop="name headline">Unity游戏性能优化实践</h2>
         
 
         <div class="post-meta">
@@ -318,17 +328,6 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/04/24/unity-game-performace-improvement/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/04/24/unity-game-performace-improvement/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -355,7 +354,7 @@
       
         <h1 id="分层"><a href="#分层" class="headerlink" title="#分层"></a>#<font color="grey">分层</font></h1><p>项目立项的时候就确定使用Lua来做热更新。Lua作为一种”胶水”语言在游戏领域被广泛使用，当然每个项目使用它的目的各不相同。Unity所用的C#本来也带有JIT（CLR会在第一次调用函数的时候将函数的IL编译成对应平台的机器码），可以实现热更新，奈何iOS禁止在其平台上使用JIT。所以大厂的引擎厂商无法提供全平台的热更新方案，只能开发者自己用Lua（iOS上也没有jit，只能解释执行）或者Python（没有编译器只有解释器）悄悄实现。</p>
 <p>这样在Unity中就有了三层逻辑。Native层的C++，接口层的C#，还有上层逻辑的Lua。分层的好处显而易见，不必关心底层实现，而且C#的程序猿肯定比C++要便宜（同样的逻辑开发难度更小，上手更快）。但每层之间信息交换带来了非常大的开销，C#使用托管堆来管理，对象内存布局方式跟C++差异很大，大部分情况下无法共用同一份数据。如果一个复杂对象的列表要从C#传入到C++，那么C#会有一份列表，而C++也会有一份列表，这个列表就占据了两份内存，同时在传递列表的时候对列表的转换也会消耗巨量的CPU时间。</p>
-<p>Lua和C#的信息交换略有不同，这跟ToLua的实现有关（项目中采用ToLua的方案）。ToLua有许多Wrapper文件，每个Wrapper文件中的Register方法会创建一个table，同时在这个table上以key-value的形式创建对应类的属性和方法，这个类型和table的映射关系保存在metaMap中，而table在C#中以reference（int）的形式展现。ToLua保存了一个objectsBackMap，作为在lua中访问的C#对象的映射关系，这是一个Dictionary<object, int="">。先获得object的Type，然后获得Type对应的table，使用objectsBackMap中键值对的值（int类型）包装成一个userdata，这个userdata在创建时会指定一个metatable，而metatable便是object的Type对应的table。所以每个对象的方法调用会经历这么一个过程：在objectsBackMap查找对象的int值（没有就创建一个），利用这个int找到lua中对应的userdata数据，然后访问userdata的metatable来找到函数指针，接着指针又调用回了C#的函数，同时获取当前Lua栈上的数据作为C#函数的传入参数，并且Lua栈上获取到的数据需要进行类型转换。这样一个复杂的调用流程，造成的开销必然不小，但却无法避免。如果把userdata中的int值看做指针，metatable看做虚表，那这一部分的优化空间就非常有限。剩下可以考虑的是objectsBackMap在对象数量太过巨大时hash表查找所花费的时间，同时在回到C#中调用函数时参数的类型转换带来的开销。设想一种应用场景，比如一个UI，在UI的顶层用一个脚本保存当前UI所需访问的所有对象的字典，参数传递尽量采用int或者float，当UI销毁时，脚本开始GC，相关对象可以一并销毁。所以toLua中会尽量把可以展开的C#对象（struct类型如Vector，Matrix）都在lua层展开，能够在同一层里解决的问题，就不要垮层掉用，避免两层之间对象传递带来的开销。从策略上讲，sLua和toLua的解决方案类似，而且优化空间小。只能着眼于具体的应用场景进行优化，比如在UI或者独立的玩法逻辑中使用更加局部的方式。</object,></p>
+<p>Lua和C#的信息交换略有不同，这跟ToLua的实现有关（项目中采用ToLua的方案）。ToLua有许多Wrapper文件，每个Wrapper文件中的Register方法会创建一个table，同时在这个table上以key-value的形式创建对应类的属性和方法，这个类型和table的映射关系保存在metaMap中，而table在C#中以reference（int）的形式展现。ToLua保存了一个objectsBackMap，作为在lua中访问的C#对象的映射关系，这是一个Dictionary&lt;object, int&gt;。先获得object的Type，然后获得Type对应的table，使用objectsBackMap中键值对的值（int类型）包装成一个userdata，这个userdata在创建时会指定一个metatable，而metatable便是object的Type对应的table。所以每个对象的方法调用会经历这么一个过程：在objectsBackMap查找对象的int值（没有就创建一个），利用这个int找到lua中对应的userdata数据，然后访问userdata的metatable来找到函数指针，接着指针又调用回了C#的函数，同时获取当前Lua栈上的数据作为C#函数的传入参数，并且Lua栈上获取到的数据需要进行类型转换。这样一个复杂的调用流程，造成的开销必然不小，但却无法避免。如果把userdata中的int值看做指针，metatable看做虚表，那这一部分的优化空间就非常有限。剩下可以考虑的是objectsBackMap在对象数量太过巨大时hash表查找所花费的时间，同时在回到C#中调用函数时参数的类型转换带来的开销。设想一种应用场景，比如一个UI，在UI的顶层用一个脚本保存当前UI所需访问的所有对象的字典，参数传递尽量采用int或者float，当UI销毁时，脚本开始GC，相关对象可以一并销毁。所以toLua中会尽量把可以展开的C#对象（struct类型如Vector，Matrix）都在lua层展开，能够在同一层里解决的问题，就不要垮层掉用，避免两层之间对象传递带来的开销。从策略上讲，sLua和toLua的解决方案类似，而且优化空间小。只能着眼于具体的应用场景进行优化，比如在UI或者独立的玩法逻辑中使用更加局部的方式。</p>
 <p>以分层的方式，可以对整个游戏程序这样进行划分。磁盘（移动平台是闪存，这里为了方便统一称为磁盘）为一层，它的上面是内存，内存上面是CPU（缓存、寄存器、逻辑单元处理等等），另外显示部分有显存和GPU。每一层都有各自的特点，根据其特点选择合适的逻辑，同时要特别注意层与层之间信息交换的开销。</p>
 <h1 id="磁盘"><a href="#磁盘" class="headerlink" title="#磁盘"></a>#<font color="grey">磁盘</font></h1><p>Unity存储在磁盘上的就是各种资源。Unity官方已经不推荐使用Resources.Load()的方式加载资源，所以假定全部资源都以AssetBundle的方式存在于磁盘上。为了优化包体大小，需要对AssetBundle进行压缩，但这样每次从磁盘上读取数据时都要解压，这是不必要的开销。所以大部分游戏在第一次运行时都会解压一次资源（从Application.streamingAssetsPath解压到Application.persistantPath），以后每次读取的是非压缩数据。从磁盘加载资源到内存，一般会用AssetBundle.LoadFromMemory(Async)和AssetBundle.LoadFromFile(Async)。LoadFromMemory(Async)会导致同一份资源占用三份内存，C#托管堆一份，native一份，显存一份，所以不推荐使用。AssetBundle.LoadFromFile(Async)会从磁盘上加载非压缩或者LZ4压缩格式的数据。Unity5.3之后开始引入LZ4压缩，可以对AB包中的每个资源进行分开压缩，这样就不必在读取一个资源时解压整个AB包。AB包数据分为两部分，头部信息和数据段。创建AB包的时候，只会初始化头部信息，只有在调用LoadAssets(LoadAssetsAsync)、LoadAllAssets(LoadAllAssetsAsync)、LoadAssetWithSubAssets(LoadAssetWithSubAssetAsync)之后才会加载对应资源的数据到内存。磁盘IO开销在很多情况下都会成为帧率抖动的元凶，这部分的优化不外乎异步，分帧，分时处理。底层调用异步接口，上层对资源加载做队列处理，这之上还可以做资源对象池。这样就可以把资源加载的IO平摊到多帧中进行，并且尽量把异步行为控制在下层，上层依然是同步的方式。</p>
 <h1 id="内存"><a href="#内存" class="headerlink" title="#内存"></a>#<font color="grey">内存</font></h1><p>这部分可以分为三种情况：内存占用，内存峰值，内存泄漏。因为mono托管堆的特殊性，只增不减，所以控制好mono托管堆的峰值也需要加入考虑范围。之前遇到过这样的情况，对资源进行解压缩操作，一开始没有使用流式操作，会在mono堆上分配很大一块内存，造成内存占用降不下来，后来改成了流式处理就好了。而socket消息的内存开销也需要注意，一般会用两个buffer的互相切换来解析消息，避免每次解析都申请一个byte[]，造成消息堆积时出现内存峰值，同时还可以用池的方式缓存起来避免频繁gc。曾经遇到过某个消息太长超过一个buffer的长度而导致解析错误，对于消息最大长度也需要做限制。要对那些从native层获取一个数组信息的接口非常谨慎。我们之前使用了meshbaker这个插件来合并mesh降低drawcall。合并mesh会对顶点及其属性进行操作，这要在mono堆中分配很大一块内存，同时操作完毕还要传回navtive层，内存的开销和CPU开销都很大。这时候就要平衡drawcall减少和内存CPU开销了。这种情况可以考虑在native层解决，写一个native plugin，直接在c++中访问unity的接口和内存(既然il2cpp可以访问，那技术上是能实现的)，避免跨层的开销。这种情况也可以推及到lua，lua中的某些操作放到native层处理，比如用C对协议字节流进行解析并直接封装为lua对象。</p>
@@ -439,16 +438,6 @@
           
 
   
-    <div class="comments" id="comments">
-      <div id="disqus_thread">
-        <noscript>
-          Please enable JavaScript to view the
-          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
-        </noscript>
-      </div>
-    </div>
-
-  
 
 
 
@@ -486,7 +475,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">阿来</p>
-              <p class="site-description motion-element" itemprop="description">专注于编程和图形</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
           <nav class="site-state motion-element">
@@ -496,7 +485,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -704,26 +693,6 @@
 
   
 
-
-  
-
-    
-      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
-    
-
-    
-      <script type="text/javascript">
-        var disqus_config = function () {
-          this.page.url = 'http://yoursite.com/2018/04/24/unity-game-performace-improvement/';
-          this.page.identifier = '2018/04/24/unity-game-performace-improvement/';
-          this.page.title = 'Unity游戏性能优化实践';
-        };
-        var d = document, s = d.createElement('script');
-        s.src = 'https://.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', '' + +new Date());
-        (d.head || d.body).appendChild(s);
-      </script>
-    
 
   
 

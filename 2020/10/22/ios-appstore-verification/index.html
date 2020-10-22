@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Program," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。 1、送审被拒历史： App Store Connect Dear Developer, We identified one or more issues with a recent delivery for your app, “xxxx” . Please correct the following issues, then upl">
+<meta name="keywords" content="Program">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS提审踩坑记">
+<meta property="og:url" content="http://yoursite.com/2020/10/22/ios-appstore-verification/index.html">
+<meta property="og:site_name" content="Graphics Boy">
+<meta property="og:description" content="最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。 1、送审被拒历史： App Store Connect Dear Developer, We identified one or more issues with a recent delivery for your app, “xxxx” . Please correct the following issues, then upl">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-10-22T11:18:15.109Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS提审踩坑记">
+<meta name="twitter:description" content="最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。 1、送审被拒历史： App Store Connect Dear Developer, We identified one or more issues with a recent delivery for your app, “xxxx” . Please correct the following issues, then upl">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/10/22/ios-appstore-verification/"/>
+
+
+
+
+
+  <title>iOS提审踩坑记 | Graphics Boy</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Graphics Boy</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description"></h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/22/ios-appstore-verification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿来">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Graphics Boy">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">iOS提审踩坑记</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-22T00:00:00+08:00">
+                2020-10-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Program/" itemprop="url" rel="index">
+                    <span itemprop="name">Program</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。</p>
+<h4 id="1、送审被拒历史："><a href="#1、送审被拒历史：" class="headerlink" title="1、送审被拒历史："></a>1、送审被拒历史：</h4><blockquote>
+<p>App Store Connect</p>
+<p>Dear Developer,</p>
+<p>We identified one or more issues with a recent delivery for your app, “xxxx” . Please correct the following issues, then upload again.</p>
+<p>ITMS-90809: Deprecated API Usage - New apps that use UIWebView are no longer accepted. Instead, use WKWebView for improved security and reliability. Learn more (<a href="https://developer.apple.com/&gt;documentation/uikit/uiwebview)" target="_blank" rel="noopener">https://developer.apple.com/&gt;documentation/uikit/uiwebview)</a>.</p>
+<p>Though you are not required to fix the following issues, we wanted to make you aware of them:</p>
+<p>ITMS-90683: Missing Purpose String in Info.plist - Your app’s code references one or more APIs that access sensitive user data. The app’s Info.plist file should contain a NSLocationWhenInUseUsageDescription key with a user-facing purpose string explaining clearly and completely why your app needs the data. Starting Spring 2019, all apps submitted to the App Store that access user data are required to include a purpose string. If you’re using external libraries or SDKs, they may reference APIs that require a purpose string. While your app might not use these APIs, a purpose string is still required. You can contact the developer of the library or SDK and request they release a version of their code that doesn’t contain the APIs. Learn more (<a href="https://developer.apple.com/documentation/uikit/core_app/protecting_the_user_s_privacy)" target="_blank" rel="noopener">https://developer.apple.com/documentation/uikit/core_app/protecting_the_user_s_privacy)</a>.</p>
+<p>Best regards,</p>
+<p>The App Store Team</p>
+</blockquote>
+<p>废弃API的引用，这个是SDK中引用的，升级SDK之后解决了此问题。邮件提示获取定位权限需要详细的说明，因为Unity在导出工程的iPhoneSensor.mm文件中使用了定位相关的API，如果确定游戏内没有使用定位功能，可以手动删掉这些API的引用（Unity最新的LTS版本对此进行了修正，不过在项目中后期升级Unity太过麻烦，所以选择手动删除相关API）。同时如果用到了这个权限，那么对此权限的使用说明要更加清晰，比如：</p>
+<blockquote>
+<p>iOS申请权限应说明用途.<br>反例 : “应用需要访问你的同意  才能访问相机”<br>正例 : “我们需要相机权限，才能保存您的游戏头像”</p>
+</blockquote>
+<p>这次拒审之后重头戏就来了，连续几次4.3，花了很大的精力来处理这个问题，庆幸的是最终过审了。</p>
+<blockquote>
+<ol start="4">
+<li>3 Design: Spam<br>Guideline 4.3 - Design</li>
+</ol>
+<p><code>We noticed that your app provides the same feature set as other apps submitted to the App Store; it simply varies in content or language, which is considered a form of spam.</code></p>
+<p>The next submission of this app may require a longer review time, and this app will not be eligible for an expedited review until this issue is resolved.</p>
+<p>Next Steps</p>
+<ul>
+<li>Review the Design section of the App Store Review Guidelines.</li>
+<li>Ensure your app is compliant with all sections of the App Store Review Guidelines and the Terms &amp; Conditions of the Apple Developer Program. </li>
+<li>Once your app is fully compliant, resubmit your app for review.</li>
+</ul>
+<p>When creating multiple apps where content is the only varying element, you should offer a single app to deliver differing content to customers. If you would like to offer this content for purchase, it would be appropriate to use the in-app purchase API.</p>
+<p>Alternatively, you may consider creating a web app, which looks and behaves similar to a native app when the customer adds it to their Home screen. Refer to the Configuring Web Applications section of the Safari Web Content Guide for more information.</p>
+<p>Submitting apps designed to mislead or harm customers or evade the review process may result in the termination of your Apple Developer Program account. Review the Terms &amp; Conditions of the Apple Developer Program to learn more about our policies regarding termination.</p>
+</blockquote>
+<blockquote>
+<p>Guideline 4.3 - Design</p>
+<p><code>This app duplicates the content and functionality of other apps submitted by you or another developer to the App Store, which is considered a form of spam.</code></p>
+<p><code>Specifically, this app appears to be identical to another app previously submitted under a terminated Apple Developer Program account.</code></p>
+<p>Apps that simply duplicate content or functionality create clutter, diminish the overall experience for the end user, and reduce the ability of developers to market their apps.</p>
+<p>The next submission of this app may require a longer review time, and this app will not be eligible for an expedited review until this issue is resolved.</p>
+<p>Next Steps</p>
+<ul>
+<li>Review the Design section of the App Store Review Guidelines.</li>
+<li>Ensure your app is compliant with all sections of the App Store Review Guidelines and the Terms &amp; Conditions of the Apple Developer Program. </li>
+<li>Once your app is fully compliant, resubmit your app for review.</li>
+</ul>
+<p>Submitting apps designed to mislead or harm customers or evade the review process may result in the termination of your Apple Developer Program account. Review the Terms &amp; Conditions of the Apple Developer Program to learn more about our policies regarding termination.</p>
+</blockquote>
+<p>两次都是4.3，不过描述还是有很大差别的，可以只看前面一两行，后面都是格式回复。这两次提包，第一次是在机审被拒，第二次是在人工审核被拒。第二次有游戏登陆记录，所以确认是到了人工审核。人工审核被拒，应该是相同的游戏名，UI基本一样，直接就被拒审了。到这里已经毫无办法，常规手段肯定会被4.3，只有朝马甲包的方向尝试了。最气的是这个项目是第一次提审，也不知道跟谁撞车了，估计跟今年版号趋严有关，苹果大力打击马甲包，AppStore的审核标准可能提高了很多。</p>
+<h4 id="2、混淆代码"><a href="#2、混淆代码" class="headerlink" title="2、混淆代码"></a>2、混淆代码</h4><p>修改了Unity的一个混淆工具的相关代码，把随机字母的形式改为了随机单词的形式，避免随机字母这种过于直白的混淆被拒审。万一AppStore的审核机制会分析代码的语义，发现类名是全大写或者全小写，而且完全不能组成一个单词，违背了一般的驼峰式或者下划线式的命名习惯，这个问题不得不考虑。</p>
+<h4 id="3、混淆资源"><a href="#3、混淆资源" class="headerlink" title="3、混淆资源"></a>3、混淆资源</h4><p>资源名和路径都要混淆，并且资源计算的md5值要不同，资源的size也需要不同。因为Unity在AssetBundle文件头部存储了当前文件内所有资源的positon和size，所以要改变AB包的md5值和大小比较简单，只需要在AB包文件的尾部Append一部分随机长度的byte[]数组就可以了。</p>
+<h4 id="4、隔离开发环境和打包环境"><a href="#4、隔离开发环境和打包环境" class="headerlink" title="4、隔离开发环境和打包环境"></a>4、隔离开发环境和打包环境</h4><p>网上很多说用不同的机器来打包，因为可操作性比较差，所以想了另外一个方式。创建一个新的用户，新用户可以较大程度上隔离之前的环境。删除这个用户内不相关的钥匙串证书，只保留打包需要的，AppleID也不要登陆。</p>
+<h4 id="5、iOS预审核"><a href="#5、iOS预审核" class="headerlink" title="5、iOS预审核"></a>5、iOS预审核</h4><p>对比了WeTest和QuickSDK的iOS预审核功能，QuickSDK的功能相对更加完善，并且说明更加精准。<br>QuickSDK主要提到了几个点：<br>a. 打包的机器用户名要更加通用，比如admin和jenkins等无特征性用户。<br>b. 预审核提示在代码中发现了dlopen和dlsym。这个问题很奇怪，是在il2cpp导出文件中发现的dlopen和dlsym，最终定位到了MacProxy.cs这个文件，在Mono.Net命名空间中。如果导出一个空的Unity工程，不会发现这个文件被导出。然后在空工程中引入一个第三方zip库，在导出工程中出现了这个文件的il2cpp导出，猜测是这个库导致MacProxy.cs文件被导出。尝试在项目中删除zip库，导出后依然存在MacProxy.cs文件。那项目中不止一处会导致导出工程中包含这个引用，所以用删减代码的方式来去掉MacProxy.cs的导出是不可行的。看了一下MacProxy.cs这个文件，主要是mac下网络代理相关的功能。游戏内基本没有使用到相关的API，可能是某些关联的依赖导致这个文件被il2cpp导出，所以直接注释掉MacProxy.cs导出的cpp文件中的接口调用，同时修改里面的dlopen和dlsym字符串文本，避免在二进制搜索中找到这个字符串。</p>
+<p>上面的组合拳一套下来，基本上也很难检测到相似的代码和资源了。不过苹果粑粑这种逼良为娼的行为，着实让人掉头发。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Program/" rel="tag"># Program</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/19/anxiety disorder/" rel="next" title="焦虑障碍">
+                <i class="fa fa-chevron-left"></i> 焦虑障碍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">阿来</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、送审被拒历史："><span class="nav-number">1.</span> <span class="nav-text">1、送审被拒历史：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、混淆代码"><span class="nav-number">2.</span> <span class="nav-text">2、混淆代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、混淆资源"><span class="nav-number">3.</span> <span class="nav-text">3、混淆资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、隔离开发环境和打包环境"><span class="nav-number">4.</span> <span class="nav-text">4、隔离开发环境和打包环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、iOS预审核"><span class="nav-number">5.</span> <span class="nav-text">5、iOS预审核</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阿来</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

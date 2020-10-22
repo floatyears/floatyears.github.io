@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Graphics Boy" />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -80,6 +80,7 @@
 
 
 <meta name="description" content="专注于编程和图形">
+<meta name="keywords" content="Graphics Program Game">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Graphics Boy">
 <meta property="og:url" content="http://yoursite.com/index.html">
@@ -160,7 +161,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <h1 class="site-subtitle" itemprop="description"></h1>
       
   </div>
 
@@ -210,6 +211,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
@@ -252,6 +263,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/10/22/ios-appstore-verification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阿来">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Graphics Boy">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/22/ios-appstore-verification/" itemprop="url">iOS提审踩坑记</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-22T00:00:00+08:00">
+                2020-10-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Program/" itemprop="url" rel="index">
+                    <span itemprop="name">Program</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。</p>
+<h4 id="1、送审被拒历史："><a href="#1、送审被拒历史：" class="headerlink" title="1、送审被拒历史："></a>1、送审被拒历史：</h4><blockquote>
+<p>App Store Connect</p>
+<p>Dear Developer,</p>
+<p>We identified one or more issues with a recent delivery for your app, “xxxx” . Please correct the following issues, then upload again.</p>
+<p>ITMS-90809: Deprecated API Usage - New apps that use UIWebView are no longer accepted. Instead, use WKWebView for improved security and reliability. Learn more (<a href="https://developer.apple.com/&gt;documentation/uikit/uiwebview)" target="_blank" rel="noopener">https://developer.apple.com/&gt;documentation/uikit/uiwebview)</a>.</p>
+<p>Though you are not required to fix the following issues, we wanted to make you aware of them:</p>
+<p>ITMS-90683: Missing Purpose String in Info.plist - Your app’s code references one or more APIs that access sensitive user data. The app’s Info.plist file should contain a NSLocationWhenInUseUsageDescription key with a user-facing purpose string explaining clearly and completely why your app needs the data. Starting Spring 2019, all apps submitted to the App Store that access user data are required to include a purpose string. If you’re using external libraries or SDKs, they may reference APIs that require a purpose string. While your app might not use these APIs, a purpose string is still required. You can contact the developer of the library or SDK and request they release a version of their code that doesn’t contain the APIs. Learn more (<a href="https://developer.apple.com/documentation/uikit/core_app/protecting_the_user_s_privacy)" target="_blank" rel="noopener">https://developer.apple.com/documentation/uikit/core_app/protecting_the_user_s_privacy)</a>.</p>
+<p>Best regards,</p>
+<p>The App Store Team</p>
+</blockquote>
+<p>废弃API的引用，这个是SDK中引用的，升级SDK之后解决了此问题。邮件提示获取定位权限需要详细的说明，因为Unity在导出工程的iPhoneSensor.mm文件中使用了定位相关的API，如果确定游戏内没有使用定位功能，可以手动删掉这些API的引用（Unity最新的LTS版本对此进行了修正，不过在项目中后期升级Unity太过麻烦，所以选择手动删除相关API）。同时如果用到了这个权限，那么对此权限的使用说明要更加清晰，比如：</p>
+<blockquote>
+<p>iOS申请权限应说明用途.<br>反例 : “应用需要访问你的同意  才能访问相机”<br>正例 : “我们需要相机权限，才能保存您的游戏头像”</p>
+</blockquote>
+<p>这次拒审之后重头戏就来了，连续几次4.3，花了很大的精力来处理这个问题，庆幸的是最终过审了。</p>
+<blockquote>
+<ol start="4">
+<li>3 Design: Spam<br>Guideline 4.3 - Design</li>
+</ol>
+<p><code>We noticed that your app provides the same feature set as other apps submitted to the App Store; it simply varies in content or language, which is considered a form of spam.</code></p>
+<p>The next submission of this app may require a longer review time, and this app will not be eligible for an expedited review until this issue is resolved.</p>
+<p>Next Steps</p>
+<ul>
+<li>Review the Design section of the App Store Review Guidelines.</li>
+<li>Ensure your app is compliant with all sections of the App Store Review Guidelines and the Terms &amp; Conditions of the Apple Developer Program. </li>
+<li>Once your app is fully compliant, resubmit your app for review.</li>
+</ul>
+<p>When creating multiple apps where content is the only varying element, you should offer a single app to deliver differing content to customers. If you would like to offer this content for purchase, it would be appropriate to use the in-app purchase API.</p>
+<p>Alternatively, you may consider creating a web app, which looks and behaves similar to a native app when the customer adds it to their Home screen. Refer to the Configuring Web Applications section of the Safari Web Content Guide for more information.</p>
+<p>Submitting apps designed to mislead or harm customers or evade the review process may result in the termination of your Apple Developer Program account. Review the Terms &amp; Conditions of the Apple Developer Program to learn more about our policies regarding termination.</p>
+</blockquote>
+<blockquote>
+<p>Guideline 4.3 - Design</p>
+<p><code>This app duplicates the content and functionality of other apps submitted by you or another developer to the App Store, which is considered a form of spam.</code></p>
+<p><code>Specifically, this app appears to be identical to another app previously submitted under a terminated Apple Developer Program account.</code></p>
+<p>Apps that simply duplicate content or functionality create clutter, diminish the overall experience for the end user, and reduce the ability of developers to market their apps.</p>
+<p>The next submission of this app may require a longer review time, and this app will not be eligible for an expedited review until this issue is resolved.</p>
+<p>Next Steps</p>
+<ul>
+<li>Review the Design section of the App Store Review Guidelines.</li>
+<li>Ensure your app is compliant with all sections of the App Store Review Guidelines and the Terms &amp; Conditions of the Apple Developer Program. </li>
+<li>Once your app is fully compliant, resubmit your app for review.</li>
+</ul>
+<p>Submitting apps designed to mislead or harm customers or evade the review process may result in the termination of your Apple Developer Program account. Review the Terms &amp; Conditions of the Apple Developer Program to learn more about our policies regarding termination.</p>
+</blockquote>
+<p>两次都是4.3，不过描述还是有很大差别的，可以只看前面一两行，后面都是格式回复。这两次提包，第一次是在机审被拒，第二次是在人工审核被拒。第二次有游戏登陆记录，所以确认是到了人工审核。人工审核被拒，应该是相同的游戏名，UI基本一样，直接就被拒审了。到这里已经毫无办法，常规手段肯定会被4.3，只有朝马甲包的方向尝试了。最气的是这个项目是第一次提审，也不知道跟谁撞车了，估计跟今年版号趋严有关，苹果大力打击马甲包，AppStore的审核标准可能提高了很多。</p>
+<h4 id="2、混淆代码"><a href="#2、混淆代码" class="headerlink" title="2、混淆代码"></a>2、混淆代码</h4><p>修改了Unity的一个混淆工具的相关代码，把随机字母的形式改为了随机单词的形式，避免随机字母这种过于直白的混淆被拒审。万一AppStore的审核机制会分析代码的语义，发现类名是全大写或者全小写，而且完全不能组成一个单词，违背了一般的驼峰式或者下划线式的命名习惯，这个问题不得不考虑。</p>
+<h4 id="3、混淆资源"><a href="#3、混淆资源" class="headerlink" title="3、混淆资源"></a>3、混淆资源</h4><p>资源名和路径都要混淆，并且资源计算的md5值要不同，资源的size也需要不同。因为Unity在AssetBundle文件头部存储了当前文件内所有资源的positon和size，所以要改变AB包的md5值和大小比较简单，只需要在AB包文件的尾部Append一部分随机长度的byte[]数组就可以了。</p>
+<h4 id="4、隔离开发环境和打包环境"><a href="#4、隔离开发环境和打包环境" class="headerlink" title="4、隔离开发环境和打包环境"></a>4、隔离开发环境和打包环境</h4><p>网上很多说用不同的机器来打包，因为可操作性比较差，所以想了另外一个方式。创建一个新的用户，新用户可以较大程度上隔离之前的环境。删除这个用户内不相关的钥匙串证书，只保留打包需要的，AppleID也不要登陆。</p>
+<h4 id="5、iOS预审核"><a href="#5、iOS预审核" class="headerlink" title="5、iOS预审核"></a>5、iOS预审核</h4><p>对比了WeTest和QuickSDK的iOS预审核功能，QuickSDK的功能相对更加完善，并且说明更加精准。<br>QuickSDK主要提到了几个点：<br>a. 打包的机器用户名要更加通用，比如admin和jenkins等无特征性用户。<br>b. 预审核提示在代码中发现了dlopen和dlsym。这个问题很奇怪，是在il2cpp导出文件中发现的dlopen和dlsym，最终定位到了MacProxy.cs这个文件，在Mono.Net命名空间中。如果导出一个空的Unity工程，不会发现这个文件被导出。然后在空工程中引入一个第三方zip库，在导出工程中出现了这个文件的il2cpp导出，猜测是这个库导致MacProxy.cs文件被导出。尝试在项目中删除zip库，导出后依然存在MacProxy.cs文件。那项目中不止一处会导致导出工程中包含这个引用，所以用删减代码的方式来去掉MacProxy.cs的导出是不可行的。看了一下MacProxy.cs这个文件，主要是mac下网络代理相关的功能。游戏内基本没有使用到相关的API，可能是某些关联的依赖导致这个文件被il2cpp导出，所以直接注释掉MacProxy.cs导出的cpp文件中的接口调用，同时修改里面的dlopen和dlsym字符串文本，避免在二进制搜索中找到这个字符串。</p>
+<p>上面的组合拳一套下来，基本上也很难检测到相似的代码和资源了。不过苹果粑粑这种逼良为娼的行为，着实让人掉头发。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/19/anxiety disorder/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -269,9 +473,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/02/19/anxiety disorder/" itemprop="url">焦虑障碍</a></h1>
+                <a class="post-title-link" href="/2020/02/19/anxiety disorder/" itemprop="url">焦虑障碍</a></h2>
         
 
         <div class="post-meta">
@@ -318,17 +522,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/02/19/anxiety disorder/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2020/02/19/anxiety disorder/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -433,9 +626,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/12/29/unity-ui-modularize/" itemprop="url">UI模块化</a></h1>
+                <a class="post-title-link" href="/2018/12/29/unity-ui-modularize/" itemprop="url">UI模块化</a></h2>
         
 
         <div class="post-meta">
@@ -482,17 +675,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/12/29/unity-ui-modularize/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/12/29/unity-ui-modularize/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -597,9 +779,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/03/running-marathon/" itemprop="url">关于马拉松这件小事</a></h1>
+                <a class="post-title-link" href="/2018/11/03/running-marathon/" itemprop="url">关于马拉松这件小事</a></h2>
         
 
         <div class="post-meta">
@@ -646,17 +828,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/11/03/running-marathon/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/11/03/running-marathon/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -757,9 +928,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/17/months-work/" itemprop="url">近几个月的工作内容</a></h1>
+                <a class="post-title-link" href="/2018/10/17/months-work/" itemprop="url">近几个月的工作内容</a></h2>
         
 
         <div class="post-meta">
@@ -806,17 +977,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/10/17/months-work/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/10/17/months-work/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -916,9 +1076,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/24/unity-game-performace-improvement/" itemprop="url">Unity游戏性能优化实践</a></h1>
+                <a class="post-title-link" href="/2018/04/24/unity-game-performace-improvement/" itemprop="url">Unity游戏性能优化实践</a></h2>
         
 
         <div class="post-meta">
@@ -966,17 +1126,6 @@
 
           
             
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/04/24/unity-game-performace-improvement/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/04/24/unity-game-performace-improvement/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
           
 
           
@@ -1005,7 +1154,7 @@
           
             <h1 id="分层"><a href="#分层" class="headerlink" title="#分层"></a>#<font color="grey">分层</font></h1><p>项目立项的时候就确定使用Lua来做热更新。Lua作为一种”胶水”语言在游戏领域被广泛使用，当然每个项目使用它的目的各不相同。Unity所用的C#本来也带有JIT（CLR会在第一次调用函数的时候将函数的IL编译成对应平台的机器码），可以实现热更新，奈何iOS禁止在其平台上使用JIT。所以大厂的引擎厂商无法提供全平台的热更新方案，只能开发者自己用Lua（iOS上也没有jit，只能解释执行）或者Python（没有编译器只有解释器）悄悄实现。</p>
 <p>这样在Unity中就有了三层逻辑。Native层的C++，接口层的C#，还有上层逻辑的Lua。分层的好处显而易见，不必关心底层实现，而且C#的程序猿肯定比C++要便宜（同样的逻辑开发难度更小，上手更快）。但每层之间信息交换带来了非常大的开销，C#使用托管堆来管理，对象内存布局方式跟C++差异很大，大部分情况下无法共用同一份数据。如果一个复杂对象的列表要从C#传入到C++，那么C#会有一份列表，而C++也会有一份列表，这个列表就占据了两份内存，同时在传递列表的时候对列表的转换也会消耗巨量的CPU时间。</p>
-<p>Lua和C#的信息交换略有不同，这跟ToLua的实现有关（项目中采用ToLua的方案）。ToLua有许多Wrapper文件，每个Wrapper文件中的Register方法会创建一个table，同时在这个table上以key-value的形式创建对应类的属性和方法，这个类型和table的映射关系保存在metaMap中，而table在C#中以reference（int）的形式展现。ToLua保存了一个objectsBackMap，作为在lua中访问的C#对象的映射关系，这是一个Dictionary<object, int="">。先获得object的Type，然后获得Type对应的table，使用objectsBackMap中键值对的值（int类型）包装成一个userdata，这个userdata在创建时会指定一个metatable，而metatable便是object的Type对应的table。所以每个对象的方法调用会经历这么一个过程：在objectsBackMap查找对象的int值（没有就创建一个），利用这个int找到lua中对应的userdata数据，然后访问userdata的metatable来找到函数指针，接着指针又调用回了C#的函数，同时获取当前Lua栈上的数据作为C#函数的传入参数，并且Lua栈上获取到的数据需要进行类型转换。这样一个复杂的调用流程，造成的开销必然不小，但却无法避免。如果把userdata中的int值看做指针，metatable看做虚表，那这一部分的优化空间就非常有限。剩下可以考虑的是objectsBackMap在对象数量太过巨大时hash表查找所花费的时间，同时在回到C#中调用函数时参数的类型转换带来的开销。设想一种应用场景，比如一个UI，在UI的顶层用一个脚本保存当前UI所需访问的所有对象的字典，参数传递尽量采用int或者float，当UI销毁时，脚本开始GC，相关对象可以一并销毁。所以toLua中会尽量把可以展开的C#对象（struct类型如Vector，Matrix）都在lua层展开，能够在同一层里解决的问题，就不要垮层掉用，避免两层之间对象传递带来的开销。从策略上讲，sLua和toLua的解决方案类似，而且优化空间小。只能着眼于具体的应用场景进行优化，比如在UI或者独立的玩法逻辑中使用更加局部的方式。</object,></p>
+<p>Lua和C#的信息交换略有不同，这跟ToLua的实现有关（项目中采用ToLua的方案）。ToLua有许多Wrapper文件，每个Wrapper文件中的Register方法会创建一个table，同时在这个table上以key-value的形式创建对应类的属性和方法，这个类型和table的映射关系保存在metaMap中，而table在C#中以reference（int）的形式展现。ToLua保存了一个objectsBackMap，作为在lua中访问的C#对象的映射关系，这是一个Dictionary&lt;object, int&gt;。先获得object的Type，然后获得Type对应的table，使用objectsBackMap中键值对的值（int类型）包装成一个userdata，这个userdata在创建时会指定一个metatable，而metatable便是object的Type对应的table。所以每个对象的方法调用会经历这么一个过程：在objectsBackMap查找对象的int值（没有就创建一个），利用这个int找到lua中对应的userdata数据，然后访问userdata的metatable来找到函数指针，接着指针又调用回了C#的函数，同时获取当前Lua栈上的数据作为C#函数的传入参数，并且Lua栈上获取到的数据需要进行类型转换。这样一个复杂的调用流程，造成的开销必然不小，但却无法避免。如果把userdata中的int值看做指针，metatable看做虚表，那这一部分的优化空间就非常有限。剩下可以考虑的是objectsBackMap在对象数量太过巨大时hash表查找所花费的时间，同时在回到C#中调用函数时参数的类型转换带来的开销。设想一种应用场景，比如一个UI，在UI的顶层用一个脚本保存当前UI所需访问的所有对象的字典，参数传递尽量采用int或者float，当UI销毁时，脚本开始GC，相关对象可以一并销毁。所以toLua中会尽量把可以展开的C#对象（struct类型如Vector，Matrix）都在lua层展开，能够在同一层里解决的问题，就不要垮层掉用，避免两层之间对象传递带来的开销。从策略上讲，sLua和toLua的解决方案类似，而且优化空间小。只能着眼于具体的应用场景进行优化，比如在UI或者独立的玩法逻辑中使用更加局部的方式。</p>
 <p>以分层的方式，可以对整个游戏程序这样进行划分。磁盘（移动平台是闪存，这里为了方便统一称为磁盘）为一层，它的上面是内存，内存上面是CPU（缓存、寄存器、逻辑单元处理等等），另外显示部分有显存和GPU。每一层都有各自的特点，根据其特点选择合适的逻辑，同时要特别注意层与层之间信息交换的开销。</p>
 <h1 id="磁盘"><a href="#磁盘" class="headerlink" title="#磁盘"></a>#<font color="grey">磁盘</font></h1><p>Unity存储在磁盘上的就是各种资源。Unity官方已经不推荐使用Resources.Load()的方式加载资源，所以假定全部资源都以AssetBundle的方式存在于磁盘上。为了优化包体大小，需要对AssetBundle进行压缩，但这样每次从磁盘上读取数据时都要解压，这是不必要的开销。所以大部分游戏在第一次运行时都会解压一次资源（从Application.streamingAssetsPath解压到Application.persistantPath），以后每次读取的是非压缩数据。从磁盘加载资源到内存，一般会用AssetBundle.LoadFromMemory(Async)和AssetBundle.LoadFromFile(Async)。LoadFromMemory(Async)会导致同一份资源占用三份内存，C#托管堆一份，native一份，显存一份，所以不推荐使用。AssetBundle.LoadFromFile(Async)会从磁盘上加载非压缩或者LZ4压缩格式的数据。Unity5.3之后开始引入LZ4压缩，可以对AB包中的每个资源进行分开压缩，这样就不必在读取一个资源时解压整个AB包。AB包数据分为两部分，头部信息和数据段。创建AB包的时候，只会初始化头部信息，只有在调用LoadAssets(LoadAssetsAsync)、LoadAllAssets(LoadAllAssetsAsync)、LoadAssetWithSubAssets(LoadAssetWithSubAssetAsync)之后才会加载对应资源的数据到内存。磁盘IO开销在很多情况下都会成为帧率抖动的元凶，这部分的优化不外乎异步，分帧，分时处理。底层调用异步接口，上层对资源加载做队列处理，这之上还可以做资源对象池。这样就可以把资源加载的IO平摊到多帧中进行，并且尽量把异步行为控制在下层，上层依然是同步的方式。</p>
 <h1 id="内存"><a href="#内存" class="headerlink" title="#内存"></a>#<font color="grey">内存</font></h1><p>这部分可以分为三种情况：内存占用，内存峰值，内存泄漏。因为mono托管堆的特殊性，只增不减，所以控制好mono托管堆的峰值也需要加入考虑范围。之前遇到过这样的情况，对资源进行解压缩操作，一开始没有使用流式操作，会在mono堆上分配很大一块内存，造成内存占用降不下来，后来改成了流式处理就好了。而socket消息的内存开销也需要注意，一般会用两个buffer的互相切换来解析消息，避免每次解析都申请一个byte[]，造成消息堆积时出现内存峰值，同时还可以用池的方式缓存起来避免频繁gc。曾经遇到过某个消息太长超过一个buffer的长度而导致解析错误，对于消息最大长度也需要做限制。要对那些从native层获取一个数组信息的接口非常谨慎。我们之前使用了meshbaker这个插件来合并mesh降低drawcall。合并mesh会对顶点及其属性进行操作，这要在mono堆中分配很大一块内存，同时操作完毕还要传回navtive层，内存的开销和CPU开销都很大。这时候就要平衡drawcall减少和内存CPU开销了。这种情况可以考虑在native层解决，写一个native plugin，直接在c++中访问unity的接口和内存(既然il2cpp可以访问，那技术上是能实现的)，避免跨层的开销。这种情况也可以推及到lua，lua中的某些操作放到native层处理，比如用C对协议字节流进行解析并直接封装为lua对象。</p>
@@ -1082,9 +1231,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/04/04/thoughts/" itemprop="url">琐思小记</a></h1>
+                <a class="post-title-link" href="/2018/04/04/thoughts/" itemprop="url">琐思小记</a></h2>
         
 
         <div class="post-meta">
@@ -1131,17 +1280,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/04/04/thoughts/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/04/04/thoughts/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -1248,9 +1386,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/04/2017-snippets/" itemprop="url">2017年度小结</a></h1>
+                <a class="post-title-link" href="/2018/02/04/2017-snippets/" itemprop="url">2017年度小结</a></h2>
         
 
         <div class="post-meta">
@@ -1297,17 +1435,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/04/2017-snippets/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2018/02/04/2017-snippets/" itemprop="commentCount"></span>
-                </a>
-              </span>
             
           
 
@@ -1438,7 +1565,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">阿来</p>
-              <p class="site-description motion-element" itemprop="description">专注于编程和图形</p>
+              <p class="site-description motion-element" itemprop="description"></p>
           </div>
 
           <nav class="site-state motion-element">
@@ -1448,7 +1575,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1636,14 +1763,6 @@
 
   
 
-
-  
-
-    
-      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
-    
-
-    
 
   
 
