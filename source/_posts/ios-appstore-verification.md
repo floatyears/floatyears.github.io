@@ -7,7 +7,7 @@ tags: [Program]
 
 最近这段时间，因为某些不可抗力，iOS提审失败，被逼做马甲包。
 
-#### 1、送审被拒历史：
+# 1、送审被拒历史： 
 >App Store Connect
 >
 >Dear Developer,
